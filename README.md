@@ -2,6 +2,8 @@
 
 balooPow is a JavaScript library designed for client-side proof-of-work (PoW) computation.
 
+a demonstration can be found at https://41baloo.github.io/balooPow/
+
 ## What is Proof of Work (PoW)?
 
 Proof of Work (PoW) is a mechanism used to ensure that a certain amount of computational effort has been expended before a request is processed. This mechanism is widely used in various contexts, such as cryptocurrency mining, spam prevention, and DDoS mitigation.
