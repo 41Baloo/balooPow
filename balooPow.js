@@ -1,5 +1,7 @@
 class BalooPow {
 	constructor(publicSalt, difficulty, challenge) {
+
+		this.workers = [];
 		this.challenge = challenge;
 		this.difficulty = difficulty;
 		this.publicSalt = publicSalt;
@@ -52,17 +54,18 @@ class BalooPow {
     `;
 	}
 
-	cloneObject(obj, iteration = 0) {
-		if (iteration > 4 || obj == null) return {};
-
-		return Object.keys(obj).reduce((acc, key) => {
-			if (typeof obj[key] === 'object' && !(obj[key] instanceof Function)) {
-				acc[key] = this.cloneObject(obj[key], iteration + 1);
-			} else if (typeof obj[key] !== 'function' && !(obj[key] instanceof HTMLElement)) {
-				acc[key] = obj[key];
-			}
-			return acc;
-		}, {});
+	cloneObject(obj, iteration) {
+		var clone = {};
+		if (iteration > 4) {
+			return clone
+		}
+		for (var i in obj) {
+			if (typeof obj[i] == "object" && obj[i] != null && !(obj[i] instanceof Function))
+				clone[i] = this.cloneObject(obj[i], iteration + 1);
+			else if (typeof obj[i] !== 'function' && !(obj[i] instanceof HTMLElement))
+				clone[i] = obj[i];
+		}
+		return clone;
 	}
 
 	spawnWorker(start, end, resolve, reject) {
@@ -72,12 +75,19 @@ class BalooPow {
 		const url = URL.createObjectURL(blob);
 		const worker = new Worker(url);
 
+		this.workers.push(worker)
+
 		worker.onmessage = (e) => {
 			const res = e.data;
-			if (res.match) {
+			if (res.match && res.solution != "") {
+				console.log("💀 Solution found, terminating all workers")
+				this.workers.forEach(w => {
+					w.terminate();
+				});
 				resolve(res);
 			} else {
-				reject("Navigator mismatch");
+				console.log("❌ This worker didn't find a solution")
+				reject("No solution found");
 			}
 		};
 
