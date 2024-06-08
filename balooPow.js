@@ -41,7 +41,7 @@ class BalooPow {
         for (let i = start; i <= end; i++) {
           if (CryptoJS.SHA256(publicSalt + i).toString() === challenge) {
             resp.solution = i;
-            resp.access = CryptoJS.SHA256(i.toString()).toString();
+            resp.access = CryptoJS.SHA256(i.toString() + publicSalt).toString();
             self.postMessage(resp);
             self.close();
             return;
@@ -118,7 +118,7 @@ class BalooPow {
 			const endDate = new Date();
 			console.log("🥳 Heureka", result);
 			console.log("Solved In:", (endDate.getTime() - startDate.getTime()) / 1000);
-			return result.solution;
+			return result;
 		} catch (e) {
 			console.log("🕵️ Something's wrong", e);
 			return null;
