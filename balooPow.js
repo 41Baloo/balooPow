@@ -15,6 +15,9 @@ class BalooPow {
             return true;
           }
           for (let key in obj1) {
+		  	if (key == "rtt") {
+			  return true;
+			}
             if (typeof obj1[key] === "function") {
               return true;
             }
