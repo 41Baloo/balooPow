@@ -27,6 +27,7 @@ class BalooPow {
                         }
                     } else {
                         if (obj1[key] !== obj2[key]) {
+                            console.log("Mismatch: ", key)
                             return false;
                         }
                     }
@@ -137,7 +138,7 @@ class BalooPow {
                 });
                 resolve(res);
             } else {
-                console.log("❌ This worker didn't find a solution");
+                console.log("❌ This worker didn't find a solution. Matched: ", res.match);
                 reject("No solution found");
             }
         };
