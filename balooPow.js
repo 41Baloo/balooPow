@@ -12,27 +12,24 @@ class BalooPow {
         self.onmessage = function(e) {
             function compareObj(obj1, obj2, iteration) {
                 if (iteration > 4) {
-                    return true;
+                    return "";
                 }
                 for (let key in obj1) {
                     if (key == "rtt") {
-                        return true;
+                        return "";
                     }
                     if (typeof obj1[key] === "function") {
-                        return true;
+                        return "";
                     }
                     if (typeof obj1[key] === "object" && obj1[key] !== null) {
-                        if (!compareObj(obj1[key], obj2[key], iteration + 1)) {
-                            return false;
-                        }
+                        return compareObj(obj1[key], obj2[key], iteration + 1)
                     } else {
                         if (obj1[key] !== obj2[key]) {
-                            console.log("Mismatch: ", key)
-                            return false;
+                            return key+", ";
                         }
                     }
                 }
-                return true;
+                return "";
             }
 
             function incrementHexString(str) {
@@ -131,7 +128,7 @@ class BalooPow {
 
         worker.onmessage = (e) => {
             const res = e.data;
-            if (res.match && res.solution !== "") {
+            if (res.match == "" && res.solution !== "") {
                 console.log("💀 Solution found, terminating all workers");
                 this.workers.forEach(w => {
                     w.terminate();
