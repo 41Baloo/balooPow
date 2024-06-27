@@ -1,151 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>BalooPow Example</title>
-		<style>
-			body {
-			font-family: Arial, sans-serif;
-			background-color: #f4f4f9;
-			color: #333;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			height: 100vh;
-			margin: 0;
-			}
-			h1 {
-			color: #4a90e2;
-			}
-			.container {
-			background: #fff;
-			border-radius: 10px;
-			padding: 20px;
-			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-			width: 300px;
-			text-align: center;
-			}
-			.input-group {
-			margin-bottom: 15px;
-			}
-			label {
-			display: block;
-			margin-bottom: 5px;
-			font-weight: bold;
-			}
-			input {
-			width: calc(100% - 20px);
-			padding: 10px;
-			border: 1px solid #ccc;
-			border-radius: 5px;
-			box-sizing: border-box;
-			}
-			button {
-			background: #4a90e2;
-			color: #fff;
-			padding: 10px 15px;
-			border: none;
-			border-radius: 5px;
-			cursor: pointer;
-			font-size: 16px;
-			}
-			button:disabled {
-			background: #ccc;
-			cursor: not-allowed;
-			}
-			.loading {
-			display: none;
-			}
-			.loading.active {
-			display: block;
-			margin-top: 15px;
-			}
-			.error {
-			color: red;
-			margin-top: 15px;
-			}
-		</style>
-	</head>
-	<body>
-		<div class="container">
-			<h1>Proof of Work</h1>
-			<div class="input-group">
-				<label for="difficulty">Difficulty:</label>
-				<input type="number" id="difficulty" value="1000000" />
-			</div>
-			<div class="input-group">
-				<label for="publicSalt">Public Salt:</label>
-				<input type="text" id="publicSalt" value="THIS_IS_A_RANDOM_PUBLIC_SALT" />
-			</div>
-			<div class="input-group">
-				<label for="privateSalt">Private Salt:</label>
-				<input type="text" id="privateSalt" />
-			</div>
-			<div class="input-group">
-				<label for="challenge">Challenge:</label>
-				<input type="text" id="challenge" />
-			</div>
-			<button id="solveBtn">Solve Proof of Work</button>
-			<div id="loading" class="loading">Bruteforcing, please wait...</div>
-			<div id="result"></div>
-			<div id="error" class="error"></div>
-		</div>
-		<script src="https://cdn.jsdelivr.net/gh/41Baloo/balooPow@latest/balooPow.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
-		<script>
-			function getRandomPrivateSalt(difficulty) {
-			  return Math.floor(Math.random() * difficulty);
-			}
-			
-			function updateChallenge() {
-			  const publicSalt = document.getElementById('publicSalt').value;
-			  const privateSalt = document.getElementById('privateSalt').value;
-			  const challenge = CryptoJS.SHA256(publicSalt + privateSalt).toString();
-			  document.getElementById('challenge').value = challenge;
-			}
-			
-			document.getElementById('publicSalt').addEventListener('input', updateChallenge);
-			document.getElementById('difficulty').addEventListener('input', () => {
-			  const difficulty = parseInt(document.getElementById('difficulty').value, 10);
-			  const privateSalt = getRandomPrivateSalt(difficulty);
-			  document.getElementById('privateSalt').value = privateSalt;
-			  updateChallenge();
-			});
-			
-			document.getElementById('solveBtn').addEventListener('click', async () => {
-			  const difficulty = parseInt(document.getElementById('difficulty').value, 10);
-			  const publicSalt = document.getElementById('publicSalt').value;
-			  const challenge = document.getElementById('challenge').value;
-			
-			  const pow = new BalooPow(publicSalt, difficulty, challenge);
-			  document.getElementById('loading').classList.add('active');
-			  document.getElementById('result').innerText = '';
-			  document.getElementById('error').innerText = '';
-			  document.getElementById('solveBtn').disabled = true;
-			
-			  try {
-			    const result = await pow.Solve();
-			    if (result.solution === null) {
-			      document.getElementById('error').innerText = 'No solution found.';
-			    } else {
-			      document.getElementById('result').innerText = `Solution found: ${result.solution}`;
-			    }
-			  } catch (error) {
-			    document.getElementById('error').innerText = `Error: ${error}`;
-			  } finally {
-			    document.getElementById('loading').classList.remove('active');
-			    document.getElementById('solveBtn').disabled = false;
-			  }
-			});
-			
-			window.addEventListener('load', () => {
-			  const difficulty = parseInt(document.getElementById('difficulty').value, 10);
-			  const privateSalt = getRandomPrivateSalt(difficulty);
-			  document.getElementById('privateSalt').value = privateSalt;
-			  updateChallenge();
-			});
-		</script>
-	</body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BalooPow Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            color: #4a90e2;
+        }
+        .container {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #4a90e2;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .loading {
+            display: none;
+        }
+        .loading.active {
+            display: block;
+            margin-top: 15px;
+        }
+        .error {
+            color: red;
+            margin-top: 15px;
+        }
+        .logs {
+            margin-top: 15px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            height: 100px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Proof of Work</h1>
+        <div class="input-group">
+            <label for="difficulty">Difficulty:</label>
+            <input type="number" id="difficulty" value="1000000" />
+        </div>
+        <div class="input-group">
+            <label for="publicSalt">Public Salt:</label>
+            <input type="text" id="publicSalt" value="THIS_IS_A_RANDOM_PUBLIC_SALT" />
+        </div>
+        <div class="input-group">
+            <label for="privateSalt">Private Salt:</label>
+            <input type="text" id="privateSalt" />
+        </div>
+        <div class="input-group">
+            <label for="challenge">Challenge:</label>
+            <input type="text" id="challenge" />
+        </div>
+        <button id="solveBtn">Solve Proof of Work</button>
+        <div id="loading" class="loading">Bruteforcing, please wait...</div>
+        <div id="result"></div>
+        <div id="error" class="error"></div>
+        <div class="logs" id="logs"></div>
+    </div>
+    <script src="balooPow.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <script>
+        const logsContainer = document.getElementById('logs');
+        const originalConsoleLog = console.log;
+
+        console.log = function (...args) {
+            originalConsoleLog.apply(console, args);
+            const message = args.join(' ');
+            const logElement = document.createElement('div');
+            logElement.textContent = message;
+            logsContainer.appendChild(logElement);
+        };
+
+        function getRandomPrivateSalt(difficulty) {
+            return Math.floor(Math.random() * difficulty);
+        }
+
+        function updateChallenge() {
+            const publicSalt = document.getElementById('publicSalt').value;
+            const privateSalt = document.getElementById('privateSalt').value;
+            const challenge = CryptoJS.SHA256(publicSalt + privateSalt).toString();
+            document.getElementById('challenge').value = challenge;
+        }
+
+        document.getElementById('publicSalt').addEventListener('input', updateChallenge);
+        document.getElementById('difficulty').addEventListener('input', () => {
+            const difficulty = parseInt(document.getElementById('difficulty').value, 10);
+            const privateSalt = getRandomPrivateSalt(difficulty);
+            document.getElementById('privateSalt').value = privateSalt;
+            updateChallenge();
+        });
+
+        document.getElementById('solveBtn').addEventListener('click', async () => {
+            const difficulty = parseInt(document.getElementById('difficulty').value, 10);
+            const publicSalt = document.getElementById('publicSalt').value;
+            const challenge = document.getElementById('challenge').value;
+
+            const pow = new BalooPow(publicSalt, difficulty, challenge);
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('result').innerText = '';
+            document.getElementById('error').innerText = '';
+            document.getElementById('solveBtn').disabled = true;
+
+            try {
+                const result = await pow.Solve();
+                if (result.solution === null) {
+                    document.getElementById('error').innerText = 'No solution found.';
+                } else {
+                    document.getElementById('result').innerText = `Solution found: ${result.solution}`;
+                }
+            } catch (error) {
+                document.getElementById('error').innerText = `Error: ${error}`;
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+                document.getElementById('solveBtn').disabled = false;
+            }
+        });
+
+        window.addEventListener('load', () => {
+            const difficulty = parseInt(document.getElementById('difficulty').value, 10);
+            const privateSalt = getRandomPrivateSalt(difficulty);
+            document.getElementById('privateSalt').value = privateSalt;
+            updateChallenge();
+        });
+    </script>
+</body>
 </html>
