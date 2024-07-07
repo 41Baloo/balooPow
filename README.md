@@ -52,3 +52,15 @@ Simply include the library on your challenge page like this
 const pow = new BalooPow(publicSalt, difficulty, challenge);
 const solution = await pow.Solve();
 ```
+
+## WASM
+
+You can find an implementation of balooPow using wasm under https://41Baloo.github.io/balooPow/wasm.html
+
+If so desired, you can include it via 
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/41Baloo/balooPow@main/balooPow.wasm.min.js"></script>
+```
+
+although it should be noted that the performance boost is minmal (~1-2 seconds) and might even be slower due to additional web requests

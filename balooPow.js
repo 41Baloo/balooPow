@@ -117,11 +117,7 @@ class BalooPow {
         return clone;
     }
 
-    spawnWorker(start, end, resolve, reject) {
-        const blob = new Blob([this.workerScript], {
-            type: 'text/javascript'
-        });
-        const url = URL.createObjectURL(blob);
+    spawnWorker(url, start, end, resolve, reject) {
         const worker = new Worker(url);
 
         this.workers.push(worker);
@@ -153,13 +149,18 @@ class BalooPow {
 
     async Solve() {
         let numWorkers = navigator.hardwareConcurrency || 2;
-        numWorkers = Math.min(numWorkers, 8);
+        numWorkers = Math.min(numWorkers, 16);
+        console.log(`🤔 Starting solve with ${numWorkers} workers`)
         const divided = this.numeric ? Math.ceil(this.difficulty / numWorkers) : Math.ceil(Math.pow(16, this.difficulty) / numWorkers);
         const workers = [];
 
+        const blob = new Blob([this.workerScript], {
+            type: 'text/javascript'
+        });
+        const url = URL.createObjectURL(blob);
         for (let i = 0; i < (this.numeric ? this.difficulty : Math.pow(16, this.difficulty)); i += divided) {
             workers.push(new Promise((resolve, reject) => {
-                this.spawnWorker(i, Math.min(i + divided - 1, this.numeric ? this.difficulty - 1 : Math.pow(16, this.difficulty) - 1), resolve, reject);
+                this.spawnWorker(url, i, Math.min(i + divided - 1, this.numeric ? this.difficulty - 1 : Math.pow(16, this.difficulty) - 1), resolve, reject);
             }));
         }
 
