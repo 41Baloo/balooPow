@@ -1,0 +1,15 @@
+{
+  "name": "baloo_pow",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "baloo_pow_bg.wasm",
+    "baloo_pow.js",
+    "baloo_pow.d.ts"
+  ],
+  "main": "baloo_pow.js",
+  "types": "baloo_pow.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
