@@ -131,7 +131,7 @@ class BalooPow {
                 });
                 resolve(res);
             } else {
-                console.log("❌ This worker didn't find a solution. Matched: ", res.match);
+                console.log("❌ This worker didn't find a solution. Match: ", res.match);
                 reject("No solution found");
             }
         };
