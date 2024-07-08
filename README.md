@@ -57,10 +57,10 @@ const solution = await pow.Solve();
 
 You can find an implementation of balooPow using wasm under https://41Baloo.github.io/balooPow/wasm.html
 
-If so desired, you can include it via 
+If so desired, you can include it via
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/41Baloo/balooPow@main/balooPow.wasm.min.js"></script>
 ```
 
-although it should be noted that the performance boost is minmal (~1-2 seconds) and might even be slower due to additional web requests
+This version is significantly faster when bruteforcing high difficulties, however for difficulties < 1.000.000, the additional cost of fetching the wasm for every spawned worker is usually not worth it
