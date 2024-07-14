@@ -22,6 +22,7 @@
             .balooPow-button {
                 appearance: none;
                 -webkit-appearance: none;
+                width: 16px;
                 height: 16px;
                 margin-right: 5px;
                 border: 1px solid #555;
@@ -30,7 +31,9 @@
                 position: relative;
                 background-color: #1e1e1e;
                 flex-shrink: 0;
+                box-sizing: border-box;
             }
+
             .balooPow-button.loading {
                 border: 2px solid #4caf50;
                 border-top: 2px solid transparent;
@@ -40,19 +43,25 @@
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            .balooPow-button.complete {
+            .balooPow-button.complete,
+            .balooPow-button.fail {
                 height: 16px;
+                width: 16px;
                 border: none;
+                box-sizing: border-box;
+            }
+
+            .balooPow-button.complete {
                 background-color: #4caf50;
                 animation: balooPowExpand 0.2s ease-out forwards, balooPowHoldShape 0.8s ease-out 0.2s forwards;
             }
+
             .balooPow-button.fail {
-                height: 16px;
-                border: none;
                 background-color: red;
                 animation: balooPowCross 0.2s ease-out forwards;
                 position: relative;
             }
+
             .balooPow-button.fail::before,
             .balooPow-button.fail::after {
                 content: '';
@@ -64,11 +73,14 @@
                 background-color: white;
                 transform: translate(-50%, -50%) rotate(45deg);
             }
+
             .balooPow-button.fail::after {
                 transform: translate(-50%, -50%) rotate(-45deg);
             }
+
             @keyframes balooPowExpand {
                 0% {
+                    width: 16px;
                     height: 16px;
                     border-radius: 50%;
                 }
@@ -83,6 +95,7 @@
                     border-radius: 8px;
                 }
             }
+
             @keyframes balooPowHoldShape {
                 0% {
                     width: 100%;
@@ -95,12 +108,15 @@
                     border-radius: 8px;
                 }
             }
+
             @keyframes balooPowCross {
                 0% {
+                    width: 16px;
                     height: 16px;
                     border-radius: 50%;
                 }
                 100% {
+                    width: 16px;
                     height: 16px;
                     border-radius: 50%;
                 }
