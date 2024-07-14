@@ -213,10 +213,10 @@
         
         const fail = (error) => {
             button.classList.remove('loading');
-            document.querySelectorAll('.balooPow-text').forEach(el => {
+            challenge.querySelectorAll('.balooPow-text').forEach(el => {
                 el.classList.add('fade-out');
             });
-            document.querySelectorAll('.powered-by').forEach(el => {
+            challenge.querySelectorAll('.powered-by').forEach(el => {
                 el.classList.add('fade-out');
             });
             setTimeout(() => {
@@ -237,15 +237,14 @@
 
         const complete = () => {
             button.classList.remove('loading');
-            document.querySelectorAll('.balooPow-text').forEach(el => {
+            challenge.querySelectorAll('.balooPow-text').forEach(el => {
                 el.classList.add('fade-out');
             });
-            document.querySelectorAll('.powered-by').forEach(el => {
+            challenge.querySelectorAll('.powered-by').forEach(el => {
                 el.classList.add('fade-out');
             });
             setTimeout(() => {
                 button.classList.add('complete');
-                console.log(shouldDisappear)
                 if (!shouldDisappear) { 
                     const onComplete = challenge.getAttribute('data-on-complete');
                     if (onComplete && typeof window[onComplete] === 'function') {
@@ -287,8 +286,7 @@
                 fail("Solution Not Found");
                 return;
             }
-
-
+        
             document.cookie=`bPow_${jsonResp.identifier}=${JSON.stringify({
                 solution: solution,
                 checksum: jsonResp.checksum
