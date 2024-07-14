@@ -31,6 +31,7 @@
                 position: relative;
                 background-color: #1e1e1e;
                 flex-shrink: 0;
+                padding: 0;
             }
             .balooPow-button.loading {
                 border: 2px solid #4caf50;
