@@ -155,6 +155,10 @@
 
     async function initializeChallenge(challenge) {
         let button = challenge.querySelector('button.balooPow-button');
+
+        const poweredByDomain = challenge.getAttribute('data-powered-domain')
+        const poweredByname = challenge.getAttribute('data-powered-name')
+
         if (!button) {
             button = document.createElement('button');
             button.className = 'balooPow-button';
@@ -184,7 +188,7 @@
 
             const poweredByText = document.createElement('div');
             poweredByText.className = 'powered-by';
-            poweredByText.innerText = 'Powered by voxga.es';
+            poweredByText.innerText = 'Powered by ' + (poweredByname == null ? 'bxv.gg' : poweredByname);
             rightContainer.append(poweredByText);
         }
 
@@ -270,13 +274,12 @@
             }
 
             const publicKey = challenge.getAttribute('data-public-key');
-            const powResp = await fetch(`https://baloo-pow-api.voxgaes.workers.dev/api/pow/${publicKey}`);
+            const powResp = await fetch(`https://${(poweredByDomain == null ? 'pow-api.bxv.gg' : poweredByDomain)}/api/pow/${publicKey}`);
             if (powResp.status !== 200) {
                 fail(`API Response: ${powResp.status}`);
                 return;
             }
             const jsonResp = await powResp.json();
-            console.log(jsonResp)
             const pow = new BalooPow(jsonResp.publicSalt, jsonResp.difficulty, jsonResp.challenge);
             const solution = await pow.Solve();
         
@@ -284,8 +287,6 @@
                 fail("Solution Not Found");
                 return;
             }
-        
-            console.log(solution);
 
 
             document.cookie=`bPow_${jsonResp.identifier}=${JSON.stringify({
@@ -299,6 +300,10 @@
         button.onclick = () => {
             start();
         };
+
+        if(challenge.getAttribute('data-auto-solve') !== null){
+            start();
+        }
     }
 
     async function initBalooPowChallenge() {
