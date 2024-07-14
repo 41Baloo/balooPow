@@ -24,7 +24,7 @@
                 -webkit-appearance: none;
                 width: 16px;
                 height: 16px;
-                margin-right: 5px;
+                margin: 5px;
                 border: 1px solid #555;
                 border-radius: 50%;
                 cursor: pointer;
