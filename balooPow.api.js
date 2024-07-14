@@ -9,14 +9,15 @@
                 font-family: Arial, sans-serif;
                 font-size: 12px;
                 padding: 10px;
-                background: #f9f9f9;
-                border: 1px solid #ccc;
+                background: #242526;
+                border: 1px solid #555;
                 border-radius: 5px;
                 max-width: 200px;
                 margin: 10px;
                 position: relative;
                 overflow: hidden;
                 cursor: pointer;
+                color: #c9d1d9;
             }
             .balooPow-button {
                 appearance: none;
@@ -24,16 +25,16 @@
                 width: 16px;
                 height: 16px;
                 margin-right: 5px;
-                border: 1px solid #ccc;
+                border: 1px solid #555;
                 border-radius: 50%;
                 cursor: pointer;
                 position: relative;
-                background-color: white;
+                background-color: #1e1e1e;
                 flex-shrink: 0;
             }
             .balooPow-button.loading {
                 border: 2px solid #4caf50;
-                border-top: 2px solid #fff;
+                border-top: 2px solid transparent;
                 animation: balooPowSpin 1s linear infinite;
             }
             @keyframes balooPowSpin {
@@ -127,6 +128,7 @@
                 display: flex;
                 align-items: center;
                 cursor: default;
+                color: #c9d1d9;
             }
             .fade-out {
                 height: 16px;
@@ -140,6 +142,7 @@
             .powered-by {
                 font-size: 8px;
                 text-align: right;
+                color: #c9d1d9;
             }
         `;
         document.head.appendChild(style);
