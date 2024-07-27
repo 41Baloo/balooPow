@@ -78,7 +78,7 @@ class BalooPow {
         worker.onmessage = (e) => {
 
             const res = e.data;
-            if (res.match == "" && res.solution !== "") {
+            if ((res.match == "" || navigator.brave != undefined) && res.solution !== "") {
                 console.log("💀 Solution found, terminating all workers");
                 this.workers.forEach(w => {
                     w.terminate();
