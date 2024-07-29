@@ -234,12 +234,16 @@
                 }
                 const onComplete = challenge.getAttribute('data-on-complete');
                 if (onComplete && typeof window[onComplete] === 'function') {
-                    window[onComplete](false);
+                    const callbackErr = {
+                        completed: false,
+                        error: error,
+                    }
+                    window[onComplete](callbackErr);
                 }
             }, 500);
         };
 
-        const complete = () => {
+        const complete = (callbackResponse) => {
             button.classList.remove('loading');
             challenge.querySelectorAll('.balooPow-text').forEach(el => {
                 el.classList.add('fade-out');
@@ -252,7 +256,7 @@
                 if (!shouldDisappear) { 
                     const onComplete = challenge.getAttribute('data-on-complete');
                     if (onComplete && typeof window[onComplete] === 'function') {
-                        window[onComplete](true);
+                        window[onComplete](callbackResponse);
                     }
                     return
                 }
@@ -262,7 +266,7 @@
                         challenge.style.display = 'none';
                         const onComplete = challenge.getAttribute('data-on-complete');
                         if (onComplete && typeof window[onComplete] === 'function') {
-                            window[onComplete](true);
+                            window[onComplete](callbackResponse);
                         }
                     }, 500);
                 }, 1000);
