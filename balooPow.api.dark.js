@@ -161,7 +161,7 @@
         let button = challenge.querySelector('button.balooPow-button');
 
         const poweredByDomain = challenge.getAttribute('data-powered-domain')
-        const poweredByname = challenge.getAttribute('data-powered-name')
+        const poweredByName = challenge.getAttribute('data-powered-name')
 
         if (!button) {
             button = document.createElement('button');
@@ -192,7 +192,7 @@
 
             const poweredByText = document.createElement('div');
             poweredByText.className = 'powered-by';
-            poweredByText.innerText = 'Powered by ' + (poweredByname == null ? 'bxv.gg' : poweredByname);
+            poweredByText.innerText = 'Powered by ' + (poweredByName == null ? 'bxv.gg' : poweredByName);
             rightContainer.append(poweredByText);
         }
 
@@ -274,6 +274,7 @@
         };
 
         const start = async () => {
+            button.classList.remove('fail');
             button.classList.add('loading');
             const verifyText = challenge.querySelector('.balooPow-text');
             if (verifyText) {
