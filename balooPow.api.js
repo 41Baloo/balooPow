@@ -304,7 +304,6 @@
             const callbackResponse = {
                 solution: solution,
                 checksum: jsonResp.checksum,
-                nos: nos,
                 completed: true,
             }
 
