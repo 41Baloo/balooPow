@@ -299,7 +299,7 @@
             document.cookie=`bPow_${jsonResp.identifier}=${JSON.stringify({
                 solution: solution,
                 checksum: jsonResp.checksum
-            })}; SameSite=Lax; path=/; Secure`
+            })}; SameSite=Lax; path=/; ${(location.protocol == "https:" ? "Secure" : "")}`
         
             const callbackResponse = {
                 solution: solution,
