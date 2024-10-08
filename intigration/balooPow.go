@@ -1,6 +1,7 @@
 package balooPow
 
 import (
+	"encoding/hex"
 	"math/rand"
 	"strconv"
 
@@ -29,7 +30,7 @@ func (pool *BalooPowPool) NewPow(identifier string, difficulty int) BalooPow {
 	pow := BalooPow{
 		Salt:       salt,
 		Solution:   solution,
-		Challenge:  string(challenge[:]),
+		Challenge:  hex.EncodeToString(challenge[:]),
 		Difficulty: difficulty,
 	}
 
