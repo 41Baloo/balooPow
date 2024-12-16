@@ -84,6 +84,14 @@ func (pool *BalooPowPool) DoesPowExist(identifier string) bool {
 	return found
 }
 
+func (pool *BalooPowPool) GetPow(identifier string) (*BalooPow, bool) {
+	pool.mutex.RLock()
+	pow, found := pool.pows[identifier]
+	pool.mutex.RUnlock()
+
+	return pow, found
+}
+
 // Check if the provided solution is valid for the given identifier (will also return false if the identifier doesn't exist)
 func (pool *BalooPowPool) IsValidSolution(identifier string, solution int) bool {
 	pool.mutex.RLock()
