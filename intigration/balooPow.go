@@ -4,22 +4,28 @@ import (
 	"encoding/hex"
 	"math/rand"
 	"strconv"
-	"sync"
 	"time"
 
+	"github.com/cespare/xxhash/v2"
 	sha256 "github.com/minio/sha256-simd"
 )
 
 // Creates a new pow pool that will hold pows that all have the given salt length. A minimum length of 10 is recommended. Pows that have not been manually deleted will be deleted after secondsValid seconds.
-func NewPowPool(saltLength int, secondsValid int64) *BalooPowPool {
+func NewPowPool(saltLength int, secondsValid int64, numShards int) *BalooPowPool {
 	pool := BalooPowPool{
-		pows:       map[string]*BalooPow{},
 		saltLength: saltLength,
 
-		lastUnix:    time.Now().Unix(),
-		powDuration: secondsValid,
+		lastUnix:    uint32(time.Now().Unix()),
+		powDuration: uint32(secondsValid), // try to be at least a little backwards compatible
 
-		mutex: &sync.RWMutex{},
+		numShards: uint32(numShards),
+		shards:    make([]*shard, numShards),
+	}
+
+	for i := 0; i < numShards; i++ {
+		pool.shards[i] = &shard{
+			data: make(map[string]*BalooPow),
+		}
 	}
 
 	go pool.deleteOutdatedPows()
@@ -27,18 +33,28 @@ func NewPowPool(saltLength int, secondsValid int64) *BalooPowPool {
 	return &pool
 }
 
+// Hash function to determine the shard
+func (pool *BalooPowPool) getShardIndex(key string) uint32 {
+	return uint32(xxhash.Sum64String(key)) % pool.numShards
+}
+
+func (pool *BalooPowPool) getShard(key string) *shard {
+	return pool.shards[pool.getShardIndex(key)]
+}
+
+// Deletes outdated Pows from all shards
 func (pool *BalooPowPool) deleteOutdatedPows() {
 	for {
-		pool.lastUnix = time.Now().Unix()
-
-		pool.mutex.Lock()
-		for identifier, pow := range pool.pows {
-			if pow.Created+pool.powDuration < pool.lastUnix {
-				delete(pool.pows, identifier)
+		pool.lastUnix = uint32(time.Now().Unix())
+		for _, shard := range pool.shards {
+			shard.mutex.Lock()
+			for key, pow := range shard.data {
+				if uint32(pow.Created+pool.powDuration) < pool.lastUnix {
+					delete(shard.data, key)
+				}
 			}
+			shard.mutex.Unlock()
 		}
-		pool.mutex.Unlock()
-
 		time.Sleep(5 * time.Second)
 	}
 }
@@ -57,46 +73,53 @@ func (pool *BalooPowPool) NewPow(identifier string, difficulty int) *BalooPow {
 		Solution:   solution,
 		Challenge:  hex.EncodeToString(challenge[:]),
 		Difficulty: difficulty,
-
-		Created: pool.lastUnix,
+		Created:    pool.lastUnix,
 	}
 
-	pool.mutex.Lock()
-	pool.pows[identifier] = pow
-	pool.mutex.Unlock()
+	shard := pool.getShard(identifier)
+	shard.mutex.Lock()
+	shard.data[identifier] = pow
+	shard.mutex.Unlock()
 
 	return pow
 }
 
 // Will delete a pow from the pool via its identifier
 func (pool *BalooPowPool) DeletePow(identifier string) {
-	pool.mutex.Lock()
-	delete(pool.pows, identifier)
-	pool.mutex.Unlock()
+	shard := pool.getShard(identifier)
+
+	shard.mutex.Lock()
+	delete(shard.data, identifier)
+	shard.mutex.Unlock()
 }
 
 // Check if a given pow exists within the pool
 func (pool *BalooPowPool) DoesPowExist(identifier string) bool {
-	pool.mutex.RLock()
-	_, found := pool.pows[identifier]
-	pool.mutex.RUnlock()
+	shard := pool.getShard(identifier)
 
+	shard.mutex.RLock()
+	_, found := shard.data[identifier]
+	shard.mutex.RUnlock()
 	return found
 }
 
 func (pool *BalooPowPool) GetPow(identifier string) (*BalooPow, bool) {
-	pool.mutex.RLock()
-	pow, found := pool.pows[identifier]
-	pool.mutex.RUnlock()
+	shard := pool.getShard(identifier)
+
+	shard.mutex.RLock()
+	pow, found := shard.data[identifier]
+	shard.mutex.RUnlock()
 
 	return pow, found
 }
 
 // Check if the provided solution is valid for the given identifier (will also return false if the identifier doesn't exist)
 func (pool *BalooPowPool) IsValidSolution(identifier string, solution int) bool {
-	pool.mutex.RLock()
-	pow, found := pool.pows[identifier]
-	pool.mutex.RUnlock()
+	shard := pool.getShard(identifier)
+
+	shard.mutex.RLock()
+	pow, found := shard.data[identifier]
+	shard.mutex.RUnlock()
 
 	if !found {
 		return false

@@ -2,20 +2,25 @@ package balooPow
 
 import "sync"
 
+type shard struct {
+	data  map[string]*BalooPow
+	mutex sync.RWMutex
+}
+
 type BalooPow struct {
 	Salt       string
 	Solution   int
 	Challenge  string
 	Difficulty int
-
-	Created int64
+	Created    uint32
 }
 
 type BalooPowPool struct {
 	saltLength int
-	pows       map[string]*BalooPow
 
-	lastUnix    int64
-	powDuration int64
-	mutex       *sync.RWMutex
+	shards    []*shard
+	numShards uint32
+
+	lastUnix    uint32
+	powDuration uint32
 }
