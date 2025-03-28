@@ -1,5 +1,5 @@
 use wasm_bindgen::prelude::*;
-use ring::digest::{Context, SHA256};
+use sha2::{Sha256, Digest};
 use serde::Serialize;
 use serde_wasm_bindgen::to_value;
 
@@ -39,7 +39,7 @@ pub fn find_solution(
         access: String::new(),
     };
 
-    let mut precomputed_context = Context::new(&SHA256);
+    let mut precomputed_context = Sha256::new();
     precomputed_context.update(public_salt_bytes);
 
     if numeric {
@@ -59,20 +59,20 @@ pub fn find_solution(
                 let len = num_bytes.len();
                 context.update(std::slice::from_raw_parts(input_ptr, len));
             }
-            let hash = context.finish();
+            let hash = context.finalize();
 
-            if hash.as_ref() == challenge_bytes.as_slice() {
-                let mut access_context = Context::new(&SHA256);
+            if hash.as_slice() == challenge_bytes.as_slice() {
+                let mut access_context = Sha256::new();
                 unsafe {
                     let input_ptr = num_bytes.as_ptr();
                     let len = num_bytes.len();
                     access_context.update(std::slice::from_raw_parts(input_ptr, len));
                     access_context.update(public_salt_bytes);
                 }
-                let access_hash = access_context.finish();
+                let access_hash = access_context.finalize();
 
                 result.solution = num_str.to_string();
-                result.access = hex::encode(access_hash.as_ref());
+                result.access = hex::encode(access_hash);
                 break;
             }
         }
@@ -92,20 +92,20 @@ pub fn find_solution(
                 let len = current_bytes.len();
                 context.update(std::slice::from_raw_parts(input_ptr, len));
             }
-            let hash = context.finish();
+            let hash = context.finalize();
 
-            if hash.as_ref() == challenge_bytes.as_slice() {
-                let mut access_context = Context::new(&SHA256);
+            if hash.as_slice() == challenge_bytes.as_slice() {
+                let mut access_context = Sha256::new();
                 unsafe {
                     let input_ptr = current_bytes.as_ptr();
                     let len = current_bytes.len();
                     access_context.update(std::slice::from_raw_parts(input_ptr, len));
                     access_context.update(public_salt_bytes);
                 }
-                let access_hash = access_context.finish();
+                let access_hash = access_context.finalize();
 
                 result.solution = current;
-                result.access = hex::encode(access_hash.as_ref());
+                result.access = hex::encode(access_hash);
                 break;
             }
         }
